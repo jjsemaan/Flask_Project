@@ -2,7 +2,7 @@
 # The os module is imported to allow interaction with the operating system. This is used later to retrieve environment variables.
 import os
 # Import the Flask class from the flask module. This class represents the WSGI application and is used to create web application instances.
-from flask import Flask
+from flask import Flask, render_template
 
 # Create an instance of the Flask class and assign it to the variable 'app'
 app = Flask(__name__)
@@ -14,7 +14,7 @@ app = Flask(__name__)
 def index():
     # Define the behavior when the root URL is accessed
     # The index() function simply returns the string "Hello, World" as the response to the client's request.
-    return "Hello, World"
+    return render_template("index.html")
 
 
 # Check if the script is being run directly by the Python interpreter
