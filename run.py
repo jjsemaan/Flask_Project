@@ -27,6 +27,11 @@ def contact():
     return render_template("contact.html")
 
 
+@app.route("/careers")
+def careers():
+    return render_template("careers.html")
+
+
 # Check if the script is being run directly by the Python interpreter
 if __name__ == "__main__":
     # If the script is being run directly:
