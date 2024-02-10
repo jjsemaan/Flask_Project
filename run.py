@@ -1,47 +1,53 @@
-# Import necessary modules
-# The os module is imported to allow interaction with the operating system. This is used later to retrieve environment variables.
 import os
-# Import the Flask class from the flask module. This class represents the WSGI application and is used to create web application instances.
-from flask import Flask, render_template
+import json
+from flask import Flask, render_template, request, flash
+if os.path.exists("env.py"):
+    import env
 
-# Create an instance of the Flask class and assign it to the variable 'app'
+
 app = Flask(__name__)
-
-# Define a route for the root URL ("/") of the web application
+app.secret_key = os.environ.get("SECRET_KEY")
 
 
 @app.route("/")
 def index():
-    # Define the behavior when the root URL is accessed
-    # The index() function simply returns the string "Hello, World" as the response to the client's request.
     return render_template("index.html")
 
 
 @app.route("/about")
 def about():
-    return render_template("about.html")
+    data = []
+    with open("data/company.json", "r") as json_data:
+        data = json.load(json_data)
+    return render_template("about.html", page_title="About", company=data)
 
 
-@app.route("/contact")
+@app.route("/about/<member_name>")
+def about_member(member_name):
+    member = {}
+    with open("data/company.json", "r") as json_data:
+        data = json.load(json_data)
+        for obj in data:
+            if obj["url"] == member_name:
+                member = obj
+    return render_template("member.html", member=member)
+
+
+@app.route("/contact", methods=["GET", "POST"])
 def contact():
-    return render_template("contact.html")
+    if request.method == "POST":
+        flash("Thanks {}, we have received your message!".format(
+            request.form.get("name")))
+    return render_template("contact.html", page_title="Contact")
 
 
 @app.route("/careers")
 def careers():
-    return render_template("careers.html")
+    return render_template("careers.html", page_title="Careers")
 
 
-# Check if the script is being run directly by the Python interpreter
 if __name__ == "__main__":
-    # If the script is being run directly:
-    # Start the Flask development server
     app.run(
-        # Specify the host IP address to listen on (defaults to "0.0.0.0" for all available network interfaces)
         host=os.environ.get("IP", "0.0.0.0"),
-        # Specify the port number to listen on (defaults to port 5000)
         port=int(os.environ.get("PORT", "5000")),
-        # Enable debug mode to automatically reload the server when code changes are detected
         debug=True)
-    # Within app.run(), the host and port parameters are set using os.environ.get() to retrieve values from environment variables. These variables allow flexibility in specifying the host and port the server should listen on. If not specified, the server defaults to listening on all available network interfaces ("0.0.0.0") and port 5000.
-    # The debug parameter is set to True to enable debug mode, which automatically reloads the server when code changes are detected, facilitating development.
